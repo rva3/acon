@@ -49,7 +49,7 @@ impl SoC {
         match self {
             Self::MT6572 => "MT6572/MT6572M/MT6572A/MT6572W",
             Self::MT6577 => "MT6577",
-            Self::MT6595 => "MT6595/MT6595M",
+            Self::MT6595 => "MT6595/MT6595M/MT6595T",
             Self::MT6768 => {
                 "MT6768/MT6769/MT6769V/CB/MT6769T/MT6769V/CT/MT6769V/CU/MT6769J/MT6769L/MT6769S/MT6769Z/MT6769V/CZ/MT6769H/MT6769G/MT6769K/MT6769I"
             }
@@ -107,8 +107,9 @@ pub const trait MMIO: Sized {
 impl MMIO for SoC {
     fn bootrom(self) -> u32 {
         match self {
-            Self::MT6572 | Self::MT6595 | Self::MT6768 => 0x00400000,
+            Self::MT6572 => 0x00400000,
             Self::MT6577 => 0xffff0000,
+            Self::MT6595 | Self::MT6768 => 0x00000000,
         }
     }
 
@@ -211,6 +212,7 @@ impl Memory for SoC {
         match self {
             // BUG: 0x2000000~0x2001000 is unusable
             Self::MT6572 => 0x2001000..0x2020000,
+            Self::MT6595 => 0x2000000..0x2040000,
             _ => todo!(),
         }
     }
@@ -219,7 +221,7 @@ impl Memory for SoC {
         match self {
             Self::MT6572 => 0x80000000,
             Self::MT6577 => todo!(), // XXX: unk
-            Self::MT6595 => todo!(), // XXX: unk
+            Self::MT6595 => 0x40000000,
             Self::MT6768 => 0x40000000,
         }
     }
