@@ -13,7 +13,11 @@ pub enum SoC {
     MT6577 = 0x6577,
     MT6582 = 0x6582,
     MT6595 = 0x6595,
+    MT6739 = 0x699,
     MT6768 = 0x707,
+    MT6855 = 0x1129,
+    MT6886 = 0x1229,
+    MT6878 = 0x1375,
 }
 
 impl Display for SoC {
@@ -54,8 +58,14 @@ impl SoC {
             Self::MT6577 => "MT6577",
             Self::MT6582 => "MT6582",
             Self::MT6595 => "MT6595/MT6595M/MT6595T",
+            Self::MT6739 => "MT6739/MT6731/MT8765",
             Self::MT6768 => {
                 "MT6768/MT6769/MT6769V/CB/MT6769T/MT6769V/CT/MT6769V/CU/MT6769J/MT6769L/MT6769S/MT6769Z/MT6769V/CZ/MT6769H/MT6769G/MT6769K/MT6769I"
+            }
+            Self::MT6855 => "MT6855/MT6855G/MT6855V/AZA/MT6855V/ATZA/MT6855V_A/ATZA/MT6855V/TTZA",
+            Self::MT6886 => "MT6886/MT6886V_A/CZA/MT6886V_B/CZA/MT6886V/TCZA",
+            Self::MT6878 => {
+                "MT6878/MT6878V/ZA/MT6878V_A/ZA/MT6878V_B/ZA/MT6878V_E/ZA/MT6878V/FZA/MT6878V_G/ZA/MT6878V/TZA/MT6878V/TFZA"
             }
         }
     }
@@ -64,10 +74,18 @@ impl SoC {
     #[must_use]
     pub const fn marketing_name(self) -> Option<&'static str> {
         match self {
-            Self::MT6572 | Self::MT6575 | Self::MT6577 | Self::MT6582 | Self::MT6595 => None,
+            Self::MT6572
+            | Self::MT6575
+            | Self::MT6577
+            | Self::MT6582
+            | Self::MT6595
+            | Self::MT6739 => None,
             Self::MT6768 => Some(
                 "Helio P65/G70/G80/G81/G81 Ultra/G81 Extreme/G85/G88/G91/G91 Ultra/G92/G92 Max",
             ),
+            Self::MT6855 => Some("Dimensity 930/7020/7025/7060"),
+            Self::MT6886 => Some("Dimensity 7200/7350"),
+            Self::MT6878 => Some("Dimensity 7300/7300X/7360/7400/7400X"),
         }
     }
 }
@@ -90,6 +108,8 @@ pub const trait MMIO: Sized {
     fn hacc(self) -> u32;
     /// get UART0 MMIO address
     fn uart0(self) -> u32;
+    /// get SSR MMIO address
+    fn ssr(self) -> Option<NonZeroU32>;
 
     /// get SoC from the hwcode
     fn try_from_hwcode(hwcode: u16) -> Option<Self>;
@@ -113,7 +133,12 @@ impl MMIO for SoC {
         match self {
             Self::MT6572 | Self::MT6582 => 0x00400000,
             Self::MT6575 | Self::MT6577 => 0xffff0000,
-            Self::MT6595 | Self::MT6768 => 0x00000000,
+            Self::MT6595
+            | Self::MT6739
+            | Self::MT6768
+            | Self::MT6855
+            | Self::MT6886
+            | Self::MT6878 => 0x00000000,
         }
     }
 
@@ -123,7 +148,8 @@ impl MMIO for SoC {
 
     fn tzcc(self) -> Option<NonZeroU32> {
         match self {
-            Self::MT6768 => Some(nz(0x10210000)),
+            Self::MT6739 | Self::MT6768 | Self::MT6855 => Some(nz(0x10210000)),
+            Self::MT6886 => Some(nz(0x1c807000)),
             _ => None,
         }
     }
@@ -131,14 +157,19 @@ impl MMIO for SoC {
     fn toprgu(self) -> u32 {
         match self {
             Self::MT6575 | Self::MT6577 => 0xc0000000, // XXX: not confirmed
-            Self::MT6572 | Self::MT6582 | Self::MT6595 | Self::MT6768 => 0x10007000,
+            Self::MT6572 | Self::MT6582 | Self::MT6595 | Self::MT6739 | Self::MT6768 => 0x10007000,
+            Self::MT6855 | Self::MT6886 => 0x1c007000,
+            Self::MT6878 => 0x1c00a000,
         }
     }
 
     fn apxgpt(self) -> Option<NonZeroU32> {
         match self {
             Self::MT6575 | Self::MT6577 => Some(nz(0xc1002000)), // XXX: not confirmed
-            Self::MT6572 | Self::MT6582 | Self::MT6595 | Self::MT6768 => Some(nz(0x10008000)),
+            Self::MT6572 | Self::MT6582 | Self::MT6595 | Self::MT6739 | Self::MT6768 => {
+                Some(nz(0x10008000))
+            }
+            Self::MT6855 | Self::MT6886 | Self::MT6878 => Some(nz(0x1c008000)),
         }
     }
 
@@ -148,14 +179,20 @@ impl MMIO for SoC {
             Self::MT6575 | Self::MT6577 => 0xc1019000, // XXX: not confirmed
             Self::MT6582 => todo!(),
             Self::MT6595 => 0x10206000,
+            Self::MT6739 => 0x11c00000,
             Self::MT6768 => 0x11ce0000,
+            Self::MT6855 => 0x11c10000,
+            Self::MT6886 => 0x11e30000,
+            Self::MT6878 => 0x11f10000,
         }
     }
 
     fn hacc(self) -> u32 {
         match self {
             Self::MT6575 | Self::MT6577 => 0xc101a000, // XXX: not confirmed
-            Self::MT6572 | Self::MT6582 | Self::MT6595 | Self::MT6768 => 0x1000a000,
+            Self::MT6572 | Self::MT6582 | Self::MT6595 | Self::MT6739 | Self::MT6768 => 0x1000a000,
+            Self::MT6855 | Self::MT6886 => 0x1c009000,
+            Self::MT6878 => 0x1040e000,
         }
     }
 
@@ -163,7 +200,15 @@ impl MMIO for SoC {
         match self {
             Self::MT6572 => 0x11005000,
             Self::MT6575 | Self::MT6577 => 0xffffff00, // XXX: not confirmed
-            Self::MT6582 | Self::MT6595 | Self::MT6768 => 0x11002000,
+            Self::MT6582 | Self::MT6595 | Self::MT6739 | Self::MT6768 => 0x11002000,
+            Self::MT6855 | Self::MT6886 | Self::MT6878 => 0x11001000,
+        }
+    }
+
+    fn ssr(self) -> Option<NonZeroU32> {
+        match self {
+            Self::MT6878 => Some(nz(0x10400000)),
+            _ => None,
         }
     }
 
@@ -174,7 +219,11 @@ impl MMIO for SoC {
             0x6577 => Some(Self::MT6577),
             0x6582 => Some(Self::MT6582),
             0x6595 => Some(Self::MT6595),
+            0x699 => Some(Self::MT6739),
             0x707 => Some(Self::MT6768),
+            0x1129 => Some(Self::MT6855),
+            0x1229 => Some(Self::MT6886),
+            0x1375 => Some(Self::MT6878),
             _ => None,
         }
     }
@@ -190,16 +239,26 @@ impl MMIO for SoC {
             0x6577 => Some(Self::MT6577),
             0x6582 => Some(Self::MT6582),
             0x6595 => Some(Self::MT6595),
+            0x6739 => Some(Self::MT6739),
             0x6768 => Some(Self::MT6768),
+            0x1129 => Some(Self::MT6855),
+            0x1229 => Some(Self::MT6886),
+            0x1375 => Some(Self::MT6878),
             _ => None,
         }
     }
 
     fn to_dacode(self) -> u16 {
         match self {
-            Self::MT6572 | Self::MT6575 | Self::MT6577 | Self::MT6582 | Self::MT6595 => {
-                self.to_hwcode()
-            }
+            Self::MT6572
+            | Self::MT6575
+            | Self::MT6577
+            | Self::MT6582
+            | Self::MT6595
+            | Self::MT6855
+            | Self::MT6886
+            | Self::MT6878 => self.to_hwcode(),
+            Self::MT6739 => 0x6739,
             Self::MT6768 => 0x6768,
         }
     }
@@ -233,7 +292,11 @@ impl Memory for SoC {
             Self::MT6572 | Self::MT6582 => 0x80000000,
             Self::MT6575 | Self::MT6577 => 0x00000000,
             Self::MT6595 => 0x40000000,
+            Self::MT6739 => 0x40000000,
             Self::MT6768 => 0x40000000,
+            Self::MT6855 => 0x40000000,
+            Self::MT6886 => 0x40000000,
+            Self::MT6878 => 0x40000000,
         }
     }
 }
