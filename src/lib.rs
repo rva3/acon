@@ -24,9 +24,13 @@ pub enum SoC {
     MT6855 = 0x1129,
     MT6886 = 0x1229,
     MT6878 = 0x1375,
+    MT6895 = 0x1172,
     MT6899 = 0x6899,
+    MT6983 = 0x907,
     MT6991 = 0x1357,
     MT6993 = 0x1471,
+    MT6858 = 0x1585,
+    MT8696 = 0x908,
 }
 
 impl Display for SoC {
@@ -92,13 +96,19 @@ impl SoC {
             Self::MT6878 => {
                 "MT6878/MT6878V/ZA/MT6878V_A/ZA/MT6878V_B/ZA/MT6878V_E/ZA/MT6878V/FZA/MT6878V_G/ZA/MT6878V/TZA/MT6878V/TFZA"
             }
+            Self::MT6895 => {
+                "MT6895/MT6895Z/CZA/MT6895Z/TCZA/MT6895Z_A/TCZA/MT6895Z_B/TCZA/MT6895ZB/MT8795/MT8795Z/TNZA/MT6896/MT6896Z/CZA/MT6896Z_B/CZA/MT6896Z_C/CZA"
+            }
             Self::MT6899 => {
                 "MT6899/MT6899Z/ZA/MT6899Z_A/ZA/MT6899Z_B/ZA/MT6899Z_C/ZA/MT6899Z_E/ZA/MT6899Z_D/ZA/MT6899Z_A/TZA/MT6899Z_T/TZA"
             }
+            Self::MT6983 => "MT6983/MT6983Z/CZA/MT6983W/CZA/MT8798/MT8798Z/CNZA/MT8798Z/TNZA",
             Self::MT6991 => {
                 "MT6991/MT6991Z/CZA/MT6991W/CZA/MT6991Z/TCZA/MT6991Z/TCZB/MT6991Z/ECZB/MT8799Z/TNZB"
             }
             Self::MT6993 => "MT6993/MT6993W/CZA",
+            Self::MT6858 => "MT6858/MT6858V/ZA/MT6858T",
+            Self::MT8696 => "MT8696",
         }
     }
 
@@ -111,7 +121,8 @@ impl SoC {
             | Self::MT6577
             | Self::MT6582
             | Self::MT6595
-            | Self::MT6739 => None,
+            | Self::MT6739
+            | Self::MT8696 => None,
             Self::MT6761 => Some("Helio A20/A22/A25/P22/G25"),
             Self::MT6765 => Some("Helio P35/G35/G36/G37/G50"),
             Self::MT6768 => Some(
@@ -124,9 +135,12 @@ impl SoC {
             Self::MT6855 => Some("Dimensity 930/7020/7025/7060"),
             Self::MT6886 => Some("Dimensity 7200/7350"),
             Self::MT6878 => Some("Dimensity 7300/7300X/7360/7400/7400X"),
+            Self::MT6895 => Some("Dimensity 8000/8100/8200/8250"),
             Self::MT6899 => Some("Dimensity 8400/8400-Ultra/8400-Turbo/8450/8500/8550"),
+            Self::MT6983 => Some("Dimensity 9000/9000+"),
             Self::MT6991 => Some("Dimensity 9400/9400+/9500s"),
             Self::MT6993 => Some("Dimensity 9500"),
+            Self::MT6858 => Some("Dimensity 7100/7300e"),
         }
     }
 }
@@ -180,9 +194,13 @@ impl MMIO for SoC {
             | Self::MT6855
             | Self::MT6886
             | Self::MT6878
+            | Self::MT6895
             | Self::MT6899
+            | Self::MT6983
             | Self::MT6991
-            | Self::MT6993 => 0x00000000,
+            | Self::MT6993
+            | Self::MT6858
+            | Self::MT8696 => 0x00000000,
         }
     }
 
@@ -203,7 +221,9 @@ impl MMIO for SoC {
             | Self::MT6877
             | Self::MT6885
             | Self::MT6789
-            | Self::MT6855 => Some(nz(0x10210000)),
+            | Self::MT6855
+            | Self::MT6895
+            | Self::MT6983 => Some(nz(0x10210000)),
             Self::MT6886 => Some(nz(0x1c807000)),
             _ => None,
         }
@@ -222,9 +242,10 @@ impl MMIO for SoC {
             | Self::MT6853
             | Self::MT6877
             | Self::MT6885
-            | Self::MT6789 => 0x10007000,
-            Self::MT6855 | Self::MT6886 => 0x1c007000,
-            Self::MT6878 => 0x1c00a000,
+            | Self::MT6789
+            | Self::MT8696 => 0x10007000,
+            Self::MT6855 | Self::MT6886 | Self::MT6895 | Self::MT6983 => 0x1c007000,
+            Self::MT6878 | Self::MT6858 => 0x1c00a000,
             Self::MT6899 => 0x1c00b000,
             Self::MT6991 | Self::MT6993 => 0x1c010000,
         }
@@ -243,9 +264,12 @@ impl MMIO for SoC {
             | Self::MT6853
             | Self::MT6877
             | Self::MT6885
-            | Self::MT6789 => Some(nz(0x10008000)),
-            Self::MT6855 | Self::MT6886 | Self::MT6878 => Some(nz(0x1c008000)),
-            Self::MT6899 | Self::MT6991 | Self::MT6993 => None, // XXX: not found
+            | Self::MT6789
+            | Self::MT8696 => Some(nz(0x10008000)),
+            Self::MT6855 | Self::MT6886 | Self::MT6878 | Self::MT6895 | Self::MT6983 => {
+                Some(nz(0x1c008000))
+            }
+            Self::MT6899 | Self::MT6991 | Self::MT6993 | Self::MT6858 => None, // XXX: not found
         }
     }
 
@@ -258,12 +282,19 @@ impl MMIO for SoC {
             Self::MT6739 => 0x11c00000,
             Self::MT6761 | Self::MT6765 => 0x11C50000,
             Self::MT6768 => 0x11ce0000,
-            Self::MT6853 | Self::MT6877 | Self::MT6885 | Self::MT6789 => 0x11f10000,
-            Self::MT6855 => 0x11c10000,
+            Self::MT6853
+            | Self::MT6877
+            | Self::MT6885
+            | Self::MT6789
+            | Self::MT6878
+            | Self::MT6895
+            | Self::MT6899
+            | Self::MT6983 => 0x11f10000,
+            Self::MT6855 | Self::MT8696 => 0x11c10000,
             Self::MT6886 => 0x11e30000,
-            Self::MT6878 | Self::MT6899 => 0x11f10000,
             Self::MT6991 => 0x13260000,
             Self::MT6993 => 0x10160000,
+            Self::MT6858 => 0x11ea0000,
         }
     }
 
@@ -280,9 +311,10 @@ impl MMIO for SoC {
             | Self::MT6853
             | Self::MT6877
             | Self::MT6885
-            | Self::MT6789 => 0x1000a000,
-            Self::MT6855 | Self::MT6886 => 0x1c009000,
-            Self::MT6878 | Self::MT6899 => 0x1040e000,
+            | Self::MT6789
+            | Self::MT8696 => 0x1000a000,
+            Self::MT6855 | Self::MT6886 | Self::MT6895 | Self::MT6983 => 0x1c009000,
+            Self::MT6878 | Self::MT6899 | Self::MT6858 => 0x1040e000,
             Self::MT6991 | Self::MT6993 => 0x1800e000,
         }
     }
@@ -301,14 +333,21 @@ impl MMIO for SoC {
             | Self::MT6877
             | Self::MT6885
             | Self::MT6789 => 0x11002000,
-            Self::MT6855 | Self::MT6886 | Self::MT6878 | Self::MT6899 => 0x11001000,
+            Self::MT6855
+            | Self::MT6886
+            | Self::MT6878
+            | Self::MT6895
+            | Self::MT6899
+            | Self::MT6983
+            | Self::MT6858 => 0x11001000,
             Self::MT6991 | Self::MT6993 => 0x16000000,
+            Self::MT8696 => 0x11002400,
         }
     }
 
     fn ssr(self) -> Option<NonZeroU32> {
         match self {
-            Self::MT6878 | Self::MT6899 => Some(nz(0x10400000)),
+            Self::MT6878 | Self::MT6899 | Self::MT6858 => Some(nz(0x10400000)),
             Self::MT6991 | Self::MT6993 => Some(nz(0x18000000)),
             _ => None,
         }
@@ -332,9 +371,13 @@ impl MMIO for SoC {
             0x1129 => Some(Self::MT6855),
             0x1229 => Some(Self::MT6886),
             0x1375 => Some(Self::MT6878),
+            0x1172 => Some(Self::MT6895),
             0x6899 => Some(Self::MT6899),
+            0x907 => Some(Self::MT6983),
             0x1357 => Some(Self::MT6991),
             0x1471 => Some(Self::MT6993),
+            0x908 => Some(Self::MT8696),
+            0x1585 => Some(Self::MT6858),
             _ => None,
         }
     }
@@ -361,9 +404,13 @@ impl MMIO for SoC {
             0x1129 => Some(Self::MT6855),
             0x1229 => Some(Self::MT6886),
             0x1375 => Some(Self::MT6878),
+            0x1172 => Some(Self::MT6895),
             0x6899 => Some(Self::MT6899),
+            0x907 => Some(Self::MT6983),
             0x1357 => Some(Self::MT6991),
             0x1471 => Some(Self::MT6993),
+            0x1585 => Some(Self::MT6858),
+            0x8696 => Some(Self::MT8696),
             _ => None,
         }
     }
@@ -379,9 +426,12 @@ impl MMIO for SoC {
             | Self::MT6855
             | Self::MT6886
             | Self::MT6878
+            | Self::MT6895
             | Self::MT6899
+            | Self::MT6983
             | Self::MT6991
-            | Self::MT6993 => self.to_hwcode(),
+            | Self::MT6993
+            | Self::MT6858 => self.to_hwcode(),
             Self::MT6739 => 0x6739,
             Self::MT6761 => 0x6761,
             Self::MT6765 => 0x6765,
@@ -389,6 +439,7 @@ impl MMIO for SoC {
             Self::MT6853 => 0x6853,
             Self::MT6877 => 0x6877,
             Self::MT6885 => 0x6885,
+            Self::MT8696 => 0x8696,
         }
     }
 }
@@ -427,7 +478,11 @@ impl Memory for SoC {
             | Self::MT6855
             | Self::MT6886
             | Self::MT6878
-            | Self::MT6899 => 0x40000000,
+            | Self::MT6895
+            | Self::MT6899
+            | Self::MT6983
+            | Self::MT6858
+            | Self::MT8696 => 0x40000000,
             Self::MT6991 | Self::MT6993 => 0x80000000,
         }
     }
