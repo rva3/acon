@@ -3,21 +3,55 @@
 #![allow(clippy::unreadable_literal)]
 #![allow(clippy::doc_markdown)]
 
-use core::{fmt::Display, num::NonZeroU32, ops::Range, ptr};
+use core::{fmt::Display, num::NonZeroU32, ops::Range};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 #[repr(u16)]
 pub enum SoC {
+    MT6570 = 0x633,
     MT6572 = 0x6572,
     MT6575 = 0x6575,
     MT6577 = 0x6577,
+    MT6580 = 0x6580,
     MT6582 = 0x6582,
     MT6595 = 0x6595,
+    MT6735 = 0x321,
     MT6739 = 0x699,
+    MT6753 = 0x337,
+    MT6755 = 0x326,
+    MT6757 = 0x551,
+    MT6761 = 0x717,
+    MT6763 = 0x690,
+    MT6765 = 0x766,
     MT6768 = 0x707,
+    MT6771 = 0x788,
+    MT6779 = 0x725,
+    MT6785 = 0x813,
+    MT6789 = 0x1208,
+    MT6797 = 0x279,
+    MT6799 = 0x562,
+    MT6833 = 0x989,
+    MT6835 = 0x1209,
+    MT6853 = 0x996,
     MT6855 = 0x1129,
-    MT6886 = 0x1229,
+    MT6858 = 0x1585,
+    MT6873 = 0x886,
+    MT6877 = 0x959,
     MT6878 = 0x1375,
+    MT6879 = 0x1007,
+    MT6885 = 0x816,
+    MT6886 = 0x1229,
+    MT6893 = 0x950,
+    MT6895 = 0x1172,
+    MT6897 = 0x1203,
+    MT6899 = 0x6899,
+    MT6983 = 0x907,
+    MT6985 = 0x1296,
+    MT6989 = 0x1236,
+    MT6991 = 0x1357,
+    MT6993 = 0x1471,
+    MT6995 = 0x1529,
+    MT8696 = 0x908,
 }
 
 impl Display for SoC {
@@ -53,20 +87,74 @@ impl SoC {
     #[must_use]
     pub const fn segment_name(self) -> &'static str {
         match self {
+            Self::MT6570 => "MT6570",
             Self::MT6572 => "MT6572/MT6572M/MT6572A/MT6572W",
             Self::MT6575 => "MT6575",
             Self::MT6577 => "MT6577",
+            Self::MT6580 => "MT6580/MT6580M/MT8321",
             Self::MT6582 => "MT6582",
             Self::MT6595 => "MT6595/MT6595M/MT6595T",
+            Self::MT6735 => "MT6735/MT6735M/MT6735T/MT6735P/MT8735/MT8735A",
             Self::MT6739 => "MT6739/MT6731/MT8765",
+            Self::MT6753 => "MT6753",
+            Self::MT6755 => {
+                "MT6755/MT6755M/MT6755T/MT6755S/MT6755V/B/MT6755V/C/MT6755V/W/MT6755V/WT/MT6755V/WM/MT6755V/WS/MT6755V/CU"
+            }
+            Self::MT6757 => "MT6757/MT6757CH/MT6757CD/MT6757V/W/MT6757V/C/MT6757V/CH/MT6757V/CW",
+            Self::MT6761 => {
+                "MT6761/MT6761V/WE/MT6761V/WAB/MT6761V/WBB/MT3369/MT8766B/MT8761/AC8259/AC8257"
+            }
+            Self::MT6763 => "MT6763/MT6763T/MT6763V/CE/MT6763V/WT/MT6763V/V/MT6763V/WN",
+            Self::MT6765 => {
+                "MT6765/MT6765G/MT6765H/MT6765V/MT6765V/CB/MT6765V/XAA/MT6765V/XBA/MT6762/MT6762G/MT6762V/WB/MT6762V/WD/MT8768T"
+            }
             Self::MT6768 => {
                 "MT6768/MT6769/MT6769V/CB/MT6769T/MT6769V/CT/MT6769V/CU/MT6769J/MT6769L/MT6769S/MT6769Z/MT6769V/CZ/MT6769H/MT6769G/MT6769K/MT6769I"
             }
+            Self::MT6771 => "MT6771/MT6771T/MT6771V/CT/MT6771V/WT/MT8385/MT8183/MT8666/MT8788A",
+            Self::MT6779 => "MT6779/MT6779V/CU/MT6779V/CV",
+            Self::MT6785 => "MT6785/MT6785V/CC/MT6785V/CD/MT8786",
+            Self::MT6789 => {
+                "MT6789/MT6789G/MT6789U/MT6789V/CD/MT6789H/MT6789I/MT6789J/MT6789T/MT8781/MT8781V/CA/MT8781V/NA"
+            }
+            Self::MT6797 => "MT6797/MT6797X/MT6797T/MT6797M/MT6797V/W/MT6797V/C/MT6797V/X",
+            Self::MT6799 => "MT6799/MT6799V/W/MT6799V/C/MT6799V/A",
+            Self::MT6833 => "MT6833/MT6833G/MT6833V/ZA/MT6833V/NZA/MT6833P/MT6833GP/MT6833V/PNZA",
+            Self::MT6835 => "MT6835/MT6835T/MT6835V/ZA/MT6835V/TZB/MT6835V/TTZB/MT8755V/TZB",
+            Self::MT6853 => "MT6853/MT6853T/MT6853V/NZA/MT6853V/TNZA",
             Self::MT6855 => "MT6855/MT6855G/MT6855V/AZA/MT6855V/ATZA/MT6855V_A/ATZA/MT6855V/TTZA",
-            Self::MT6886 => "MT6886/MT6886V_A/CZA/MT6886V_B/CZA/MT6886V/TCZA",
+            Self::MT6858 => "MT6858/MT6858V/ZA/MT6858T",
+            Self::MT6873 => "MT6873/MT6873V/ZA",
+            Self::MT6877 => {
+                "MT6877/MT6877T/MT6877V/ZA/MT6877V/TZA/MT6877V/TTZA/MT6877V_T/TTZA/MT8791/MT8791N"
+            }
             Self::MT6878 => {
                 "MT6878/MT6878V/ZA/MT6878V_A/ZA/MT6878V_B/ZA/MT6878V_E/ZA/MT6878V/FZA/MT6878V_G/ZA/MT6878V/TZA/MT6878V/TFZA"
             }
+            Self::MT6879 => "MT6879/MT6879V/ZA/MT6879V_T/ZA",
+            Self::MT6885 => {
+                "MT6885/MT6885Z/CZA/MT6883/MT6883Z/CZA/MT6889/MT6889Z/CZA/MT6880/MT6890"
+            }
+            Self::MT6886 => "MT6886/MT6886V_A/CZA/MT6886V_B/CZA/MT6886V/TCZA",
+            Self::MT6893 => {
+                "MT6893/MT6893Z/CZA/MT6891/MT6891Z/CZA/MT6891Z_A/CZA/MT6893Z_A/CZA/MT6893Z_B/CZA/MT6893_D/CZA"
+            }
+            Self::MT6895 => {
+                "MT6895/MT6895Z/CZA/MT6895Z/TCZA/MT6895Z_A/TCZA/MT6895Z_B/TCZA/MT6895ZB/MT8795/MT8795Z/TNZA/MT6896/MT6896Z/CZA/MT6896Z_B/CZA/MT6896Z_C/CZA"
+            }
+            Self::MT6897 => "MT6897/MT6897Z_A/ZA/MT6897Z_B/ZA/MT8792Z/NB/MT8792Z/NA",
+            Self::MT6899 => {
+                "MT6899/MT6899Z/ZA/MT6899Z_A/ZA/MT6899Z_B/ZA/MT6899Z_C/ZA/MT6899Z_E/ZA/MT6899Z_D/ZA/MT6899Z_A/TZA/MT6899Z_T/TZA"
+            }
+            Self::MT6983 => "MT6983/MT6983Z/CZA/MT6983W/CZA/MT8798/MT8798Z/CNZA/MT8798Z/TNZA",
+            Self::MT6985 => "MT6985/MT6985W/CZA/MT6985W/TCZA",
+            Self::MT6989 => "MT6989/MT6989W/CZA/MT6989W/TCZA/MT6989T_e/MT8796/MT8796W/CNZA",
+            Self::MT6991 => {
+                "MT6991/MT6991Z/CZA/MT6991W/CZA/MT6991Z/TCZA/MT6991Z/TCZB/MT6991Z/ECZB/MT8196"
+            }
+            Self::MT6993 => "MT6993/MT6993W/CZA",
+            Self::MT6995 => "MT6995",
+            Self::MT8696 => "MT8696",
         }
     }
 
@@ -74,18 +162,52 @@ impl SoC {
     #[must_use]
     pub const fn marketing_name(self) -> Option<&'static str> {
         match self {
-            Self::MT6572
+            Self::MT6570
+            | Self::MT6572
             | Self::MT6575
             | Self::MT6577
+            | Self::MT6580
             | Self::MT6582
             | Self::MT6595
-            | Self::MT6739 => None,
+            | Self::MT6735
+            | Self::MT6739
+            | Self::MT6753
+            | Self::MT8696 => None,
+            Self::MT6755 => Some("Helio P10/P15/P18"),
+            Self::MT6757 => Some("Helio P20/P25"),
+            Self::MT6761 => Some("Helio A20/A22/A25/P22/G25"),
+            Self::MT6763 => Some("Helio P23"),
+            Self::MT6765 => Some("Helio P35/G35/G36/G37/G50"),
             Self::MT6768 => Some(
                 "Helio P65/G70/G80/G81/G81 Ultra/G81 Extreme/G85/G88/G91/G91 Ultra/G92/G92 Max",
             ),
+            Self::MT6771 => Some("Helio P60/P70/G80, Kompanio 500, Genio 500"),
+            Self::MT6779 => Some("Helio P90/P95"),
+            Self::MT6785 => Some("Helio G90/G90T/G95"),
+            Self::MT6789 => Some("Helio G99/G100/G200"),
+            Self::MT6797 => Some("Helio X20/X23/X25/X27"),
+            Self::MT6799 => Some("Helio X30"),
+            Self::MT6833 => Some("Dimensity 700/810/6020/6080"),
+            Self::MT6835 => Some("Dimensity 6100+/6300/6400"),
+            Self::MT6853 => Some("Dimensity 720/800U"),
             Self::MT6855 => Some("Dimensity 930/7020/7025/7060"),
-            Self::MT6886 => Some("Dimensity 7200/7350"),
+            Self::MT6858 => Some("Dimensity 7100/7300e"),
+            Self::MT6873 => Some("Dimensity 800/820"),
+            Self::MT6877 => Some("Dimensity 900/920/1080/7050"),
             Self::MT6878 => Some("Dimensity 7300/7300X/7360/7400/7400X"),
+            Self::MT6879 => Some("Dimensity 1050/7030"),
+            Self::MT6885 => Some("Dimensity 1000C/1000L/1000/1000+"),
+            Self::MT6886 => Some("Dimensity 7200/7350"),
+            Self::MT6893 => Some("Dimensity 1100/1200/1300/8020/8050"),
+            Self::MT6895 => Some("Dimensity 8000/8100/8200/8250"),
+            Self::MT6897 => Some("Dimensity 8300/8350"),
+            Self::MT6899 => Some("Dimensity 8400/8400-Ultra/8400-Turbo/8450/8500/8550"),
+            Self::MT6983 => Some("Dimensity 9000/9000+"),
+            Self::MT6985 => Some("Dimensity 9200/9200+"),
+            Self::MT6989 => Some("Dimensity 9300/9300+/9400e"),
+            Self::MT6991 => Some("Dimensity 9400/9400+/9500s"),
+            Self::MT6993 => Some("Dimensity 9500"),
+            Self::MT6995 => Some("Dimensity 9600"),
         }
     }
 }
@@ -95,7 +217,7 @@ pub const trait MMIO: Sized {
     /// get BootROM base address
     fn bootrom(self) -> u32;
     /// get devinfo (region with hwcode/subcode/...) MMIO address
-    fn devinfo() -> u32;
+    fn devinfo(self) -> u32;
     /// get Trust Zone Crypto Cell MMIO address
     fn tzcc(self) -> Option<NonZeroU32>;
     /// get TOP Reset Generator Unit (watchdog) MMIO address
@@ -108,7 +230,7 @@ pub const trait MMIO: Sized {
     fn hacc(self) -> u32;
     /// get UART0 MMIO address
     fn uart0(self) -> u32;
-    /// get SSR MMIO address
+    /// get SSR (Scalable Security Root) MMIO address
     fn ssr(self) -> Option<NonZeroU32>;
 
     /// get SoC from the hwcode
@@ -120,35 +242,83 @@ pub const trait MMIO: Sized {
     fn try_from_dacode(dacode: u16) -> Option<Self>;
     /// get dacode for the SoC
     fn to_dacode(self) -> u16;
-
-    /// read value from the [`SoC::devinfo`] and try to determine the SoC
-    ///
-    /// # Safety
-    /// safe only when running on the MediaTek chips
-    unsafe fn try_from_mmio() -> Option<Self>;
 }
 
 impl MMIO for SoC {
     fn bootrom(self) -> u32 {
         match self {
+            Self::MT6570
+            | Self::MT6580
+            | Self::MT6595
+            | Self::MT6735
+            | Self::MT6739
+            | Self::MT6753
+            | Self::MT6755
+            | Self::MT6757
+            | Self::MT6761
+            | Self::MT6763
+            | Self::MT6765
+            | Self::MT6768
+            | Self::MT6771
+            | Self::MT6779
+            | Self::MT6785
+            | Self::MT6789
+            | Self::MT6797
+            | Self::MT6799
+            | Self::MT6833
+            | Self::MT6835
+            | Self::MT6853
+            | Self::MT6855
+            | Self::MT6858
+            | Self::MT6873
+            | Self::MT6877
+            | Self::MT6878
+            | Self::MT6879
+            | Self::MT6885
+            | Self::MT6886
+            | Self::MT6893
+            | Self::MT6895
+            | Self::MT6897
+            | Self::MT6899
+            | Self::MT6983
+            | Self::MT6985
+            | Self::MT6989
+            | Self::MT6991
+            | Self::MT6993
+            | Self::MT6995
+            | Self::MT8696 => 0x00000000,
             Self::MT6572 | Self::MT6582 => 0x00400000,
             Self::MT6575 | Self::MT6577 => 0xffff0000,
-            Self::MT6595
-            | Self::MT6739
-            | Self::MT6768
-            | Self::MT6855
-            | Self::MT6886
-            | Self::MT6878 => 0x00000000,
         }
     }
 
-    fn devinfo() -> u32 {
-        0x08000000 // XXX: not confirmed for 6577
+    fn devinfo(self) -> u32 {
+        match self {
+            Self::MT6991 | Self::MT6993 | Self::MT6995 => 0x00f00000,
+            _ => 0x08000000, // XXX: not confirmed for 6577
+        }
     }
 
     fn tzcc(self) -> Option<NonZeroU32> {
         match self {
-            Self::MT6739 | Self::MT6768 | Self::MT6855 => Some(nz(0x10210000)),
+            Self::MT6739
+            | Self::MT6761
+            | Self::MT6763
+            | Self::MT6765
+            | Self::MT6768
+            | Self::MT6771
+            | Self::MT6779
+            | Self::MT6785
+            | Self::MT6789
+            | Self::MT6835
+            | Self::MT6853
+            | Self::MT6855
+            | Self::MT6877
+            | Self::MT6879
+            | Self::MT6885
+            | Self::MT6895
+            | Self::MT6983 => Some(nz(0x10210000)),
+            Self::MT6799 => Some(nz(0x11B20000)),
             Self::MT6886 => Some(nz(0x1c807000)),
             _ => None,
         }
@@ -156,74 +326,267 @@ impl MMIO for SoC {
 
     fn toprgu(self) -> u32 {
         match self {
+            Self::MT6570
+            | Self::MT6572
+            | Self::MT6580
+            | Self::MT6582
+            | Self::MT6595
+            | Self::MT6739
+            | Self::MT6755
+            | Self::MT6757
+            | Self::MT6761
+            | Self::MT6763
+            | Self::MT6765
+            | Self::MT6768
+            | Self::MT6771
+            | Self::MT6779
+            | Self::MT6785
+            | Self::MT6789
+            | Self::MT6797
+            | Self::MT6833
+            | Self::MT6853
+            | Self::MT6873
+            | Self::MT6877
+            | Self::MT6885
+            | Self::MT6893
+            | Self::MT8696 => 0x10007000,
             Self::MT6575 | Self::MT6577 => 0xc0000000, // XXX: not confirmed
-            Self::MT6572 | Self::MT6582 | Self::MT6595 | Self::MT6739 | Self::MT6768 => 0x10007000,
-            Self::MT6855 | Self::MT6886 => 0x1c007000,
-            Self::MT6878 => 0x1c00a000,
+            Self::MT6735 | Self::MT6753 => 0x10212000,
+            Self::MT6799 => 0x10211000,
+            Self::MT6835
+            | Self::MT6855
+            | Self::MT6879
+            | Self::MT6886
+            | Self::MT6895
+            | Self::MT6983
+            | Self::MT6985 => 0x1c007000,
+            Self::MT6858 | Self::MT6878 | Self::MT6897 => 0x1c00a000,
+            Self::MT6899 | Self::MT6989 => 0x1c00b000,
+            Self::MT6991 | Self::MT6993 | Self::MT6995 => 0x1c010000,
         }
     }
 
     fn apxgpt(self) -> Option<NonZeroU32> {
         match self {
+            Self::MT6570
+            | Self::MT6572
+            | Self::MT6580
+            | Self::MT6582
+            | Self::MT6595
+            | Self::MT6739
+            | Self::MT6755
+            | Self::MT6757
+            | Self::MT6761
+            | Self::MT6763
+            | Self::MT6765
+            | Self::MT6768
+            | Self::MT6771
+            | Self::MT6779
+            | Self::MT6785
+            | Self::MT6789
+            | Self::MT6797
+            | Self::MT6833
+            | Self::MT6835
+            | Self::MT6853
+            | Self::MT6873
+            | Self::MT6877
+            | Self::MT6879
+            | Self::MT6885
+            | Self::MT6893
+            | Self::MT6989
+            | Self::MT8696 => Some(nz(0x10008000)),
             Self::MT6575 | Self::MT6577 => Some(nz(0xc1002000)), // XXX: not confirmed
-            Self::MT6572 | Self::MT6582 | Self::MT6595 | Self::MT6739 | Self::MT6768 => {
-                Some(nz(0x10008000))
-            }
-            Self::MT6855 | Self::MT6886 | Self::MT6878 => Some(nz(0x1c008000)),
+            Self::MT6735 | Self::MT6753 | Self::MT6799 => Some(nz(0x10004000)),
+            Self::MT6855
+            | Self::MT6878
+            | Self::MT6886
+            | Self::MT6895
+            | Self::MT6897
+            | Self::MT6983
+            | Self::MT6985 => Some(nz(0x1c008000)),
+            Self::MT6858 | Self::MT6899 | Self::MT6991 | Self::MT6993 | Self::MT6995 => None, // XXX: not found
         }
     }
 
     fn efuse(self) -> u32 {
         match self {
-            Self::MT6572 => 0x10009000,
+            Self::MT6570 | Self::MT6572 | Self::MT6580 => 0x10009000,
             Self::MT6575 | Self::MT6577 => 0xc1019000, // XXX: not confirmed
             Self::MT6582 => todo!(),
-            Self::MT6595 => 0x10206000,
+            Self::MT6595 | Self::MT6753 | Self::MT6755 | Self::MT6757 | Self::MT6797 => 0x10206000,
+            Self::MT6735 | Self::MT6761 | Self::MT6765 => 0x11c50000,
             Self::MT6739 => 0x11c00000,
+            Self::MT6763
+            | Self::MT6771
+            | Self::MT6785
+            | Self::MT6789
+            | Self::MT6799
+            | Self::MT6853
+            | Self::MT6877
+            | Self::MT6878
+            | Self::MT6879
+            | Self::MT6885
+            | Self::MT6895
+            | Self::MT6897
+            | Self::MT6899
+            | Self::MT6983
+            | Self::MT6985
+            | Self::MT6989 => 0x11f10000,
             Self::MT6768 => 0x11ce0000,
-            Self::MT6855 => 0x11c10000,
+            Self::MT6779
+            | Self::MT6833
+            | Self::MT6835
+            | Self::MT6855
+            | Self::MT6873
+            | Self::MT6893
+            | Self::MT8696 => 0x11c10000,
+            Self::MT6858 => 0x11ea0000,
             Self::MT6886 => 0x11e30000,
-            Self::MT6878 => 0x11f10000,
+            Self::MT6991 => 0x13260000,
+            Self::MT6993 | Self::MT6995 => 0x10160000,
         }
     }
 
     fn hacc(self) -> u32 {
         match self {
+            Self::MT6570
+            | Self::MT6580
+            | Self::MT6572
+            | Self::MT6582
+            | Self::MT6595
+            | Self::MT6739
+            | Self::MT6755
+            | Self::MT6757
+            | Self::MT6761
+            | Self::MT6763
+            | Self::MT6765
+            | Self::MT6768
+            | Self::MT6771
+            | Self::MT6779
+            | Self::MT6785
+            | Self::MT6789
+            | Self::MT6797
+            | Self::MT6799
+            | Self::MT6833
+            | Self::MT6835
+            | Self::MT6853
+            | Self::MT6873
+            | Self::MT6877
+            | Self::MT6879
+            | Self::MT6885
+            | Self::MT6893
+            | Self::MT8696 => 0x1000a000,
             Self::MT6575 | Self::MT6577 => 0xc101a000, // XXX: not confirmed
-            Self::MT6572 | Self::MT6582 | Self::MT6595 | Self::MT6739 | Self::MT6768 => 0x1000a000,
-            Self::MT6855 | Self::MT6886 => 0x1c009000,
-            Self::MT6878 => 0x1040e000,
+            Self::MT6735 | Self::MT6753 => 0x10008000,
+            Self::MT6855 | Self::MT6886 | Self::MT6895 | Self::MT6983 | Self::MT6985 => 0x1c009000,
+            Self::MT6858 | Self::MT6878 | Self::MT6897 | Self::MT6899 | Self::MT6989 => 0x1040e000,
+            Self::MT6991 | Self::MT6993 | Self::MT6995 => 0x1800e000,
         }
     }
 
     fn uart0(self) -> u32 {
         match self {
-            Self::MT6572 => 0x11005000,
+            Self::MT6570 | Self::MT6572 | Self::MT6580 => 0x11005000,
             Self::MT6575 | Self::MT6577 => 0xffffff00, // XXX: not confirmed
-            Self::MT6582 | Self::MT6595 | Self::MT6739 | Self::MT6768 => 0x11002000,
-            Self::MT6855 | Self::MT6886 | Self::MT6878 => 0x11001000,
+            Self::MT6582
+            | Self::MT6595
+            | Self::MT6735
+            | Self::MT6739
+            | Self::MT6753
+            | Self::MT6755
+            | Self::MT6757
+            | Self::MT6761
+            | Self::MT6763
+            | Self::MT6765
+            | Self::MT6768
+            | Self::MT6771
+            | Self::MT6779
+            | Self::MT6785
+            | Self::MT6789
+            | Self::MT6797
+            | Self::MT6799
+            | Self::MT6833
+            | Self::MT6853
+            | Self::MT6873
+            | Self::MT6877
+            | Self::MT6885
+            | Self::MT6893 => 0x11002000,
+            Self::MT6835
+            | Self::MT6855
+            | Self::MT6858
+            | Self::MT6878
+            | Self::MT6879
+            | Self::MT6886
+            | Self::MT6895
+            | Self::MT6897
+            | Self::MT6899
+            | Self::MT6983
+            | Self::MT6985
+            | Self::MT6989 => 0x11001000,
+            Self::MT6991 | Self::MT6993 | Self::MT6995 => 0x16000000,
+            Self::MT8696 => 0x11002400,
         }
     }
 
     fn ssr(self) -> Option<NonZeroU32> {
         match self {
-            Self::MT6878 => Some(nz(0x10400000)),
+            Self::MT6858
+            | Self::MT6878
+            | Self::MT6897
+            | Self::MT6899
+            | Self::MT6985
+            | Self::MT6989 => Some(nz(0x10400000)),
+            Self::MT6991 | Self::MT6993 | Self::MT6995 => Some(nz(0x18000000)),
             _ => None,
         }
     }
 
     fn try_from_hwcode(hwcode: u16) -> Option<Self> {
         match hwcode {
+            0x633 => Some(Self::MT6570),
             0x6572 => Some(Self::MT6572),
             0x6575 => Some(Self::MT6575),
             0x6577 => Some(Self::MT6577),
+            0x6580 => Some(Self::MT6580),
             0x6582 => Some(Self::MT6582),
             0x6595 => Some(Self::MT6595),
+            0x321 => Some(Self::MT6735),
             0x699 => Some(Self::MT6739),
+            0x337 => Some(Self::MT6753),
+            0x326 => Some(Self::MT6755),
+            0x551 => Some(Self::MT6757),
+            0x717 => Some(Self::MT6761),
+            0x690 => Some(Self::MT6763),
+            0x766 => Some(Self::MT6765),
             0x707 => Some(Self::MT6768),
+            0x788 => Some(Self::MT6771),
+            0x725 => Some(Self::MT6779),
+            0x813 => Some(Self::MT6785),
+            0x1208 => Some(Self::MT6789),
+            0x279 => Some(Self::MT6797),
+            0x562 => Some(Self::MT6799),
+            0x989 => Some(Self::MT6833),
+            0x1209 => Some(Self::MT6835),
+            0x996 => Some(Self::MT6853),
             0x1129 => Some(Self::MT6855),
-            0x1229 => Some(Self::MT6886),
+            0x1585 => Some(Self::MT6858),
+            0x886 => Some(Self::MT6873),
+            0x959 => Some(Self::MT6877),
             0x1375 => Some(Self::MT6878),
+            0x1007 => Some(Self::MT6879),
+            0x816 => Some(Self::MT6885),
+            0x1229 => Some(Self::MT6886),
+            0x950 => Some(Self::MT6893),
+            0x1172 => Some(Self::MT6895),
+            0x1203 => Some(Self::MT6897),
+            0x6899 => Some(Self::MT6899),
+            0x907 => Some(Self::MT6983),
+            0x1296 => Some(Self::MT6985),
+            0x1236 => Some(Self::MT6989),
+            0x1357 => Some(Self::MT6991),
+            0x1471 => Some(Self::MT6993),
+            0x1529 => Some(Self::MT6995),
+            0x908 => Some(Self::MT8696),
             _ => None,
         }
     }
@@ -234,16 +597,50 @@ impl MMIO for SoC {
 
     fn try_from_dacode(dacode: u16) -> Option<Self> {
         match dacode {
+            0x6570 => Some(Self::MT6570),
             0x6572 => Some(Self::MT6572),
             0x6575 => Some(Self::MT6575),
             0x6577 => Some(Self::MT6577),
+            0x6580 => Some(Self::MT6580),
             0x6582 => Some(Self::MT6582),
             0x6595 => Some(Self::MT6595),
+            0x6735 => Some(Self::MT6735),
             0x6739 => Some(Self::MT6739),
+            0x6753 => Some(Self::MT6753),
+            0x6755 => Some(Self::MT6755),
+            0x6757 => Some(Self::MT6757),
+            0x6761 => Some(Self::MT6761),
+            0x6763 => Some(Self::MT6763),
+            0x6765 => Some(Self::MT6765),
             0x6768 => Some(Self::MT6768),
+            0x6771 => Some(Self::MT6771),
+            0x6779 => Some(Self::MT6779),
+            0x6785 => Some(Self::MT6785),
+            0x1208 => Some(Self::MT6789),
+            0x6797 => Some(Self::MT6797),
+            0x6799 => Some(Self::MT6799),
+            0x6833 => Some(Self::MT6833),
+            0x1209 => Some(Self::MT6835),
+            0x6853 => Some(Self::MT6853),
             0x1129 => Some(Self::MT6855),
-            0x1229 => Some(Self::MT6886),
+            0x1585 => Some(Self::MT6858),
+            0x6873 => Some(Self::MT6873),
+            0x6877 => Some(Self::MT6877),
             0x1375 => Some(Self::MT6878),
+            0x1007 => Some(Self::MT6879),
+            0x6885 => Some(Self::MT6885),
+            0x1229 => Some(Self::MT6886),
+            0x6893 => Some(Self::MT6893),
+            0x1172 => Some(Self::MT6895),
+            0x1203 => Some(Self::MT6897),
+            0x6899 => Some(Self::MT6899),
+            0x907 => Some(Self::MT6983),
+            0x1296 => Some(Self::MT6985),
+            0x1236 => Some(Self::MT6989),
+            0x1357 => Some(Self::MT6991),
+            0x1471 => Some(Self::MT6993),
+            0x1529 => Some(Self::MT6995),
+            0x8696 => Some(Self::MT8696),
             _ => None,
         }
     }
@@ -253,19 +650,48 @@ impl MMIO for SoC {
             Self::MT6572
             | Self::MT6575
             | Self::MT6577
+            | Self::MT6580
             | Self::MT6582
             | Self::MT6595
+            | Self::MT6789
+            | Self::MT6835
             | Self::MT6855
+            | Self::MT6858
+            | Self::MT6878
+            | Self::MT6879
             | Self::MT6886
-            | Self::MT6878 => self.to_hwcode(),
+            | Self::MT6895
+            | Self::MT6897
+            | Self::MT6899
+            | Self::MT6983
+            | Self::MT6985
+            | Self::MT6989
+            | Self::MT6991
+            | Self::MT6993
+            | Self::MT6995 => self.to_hwcode(),
+            Self::MT6570 => 0x6570,
+            Self::MT6735 => 0x6735,
             Self::MT6739 => 0x6739,
+            Self::MT6753 => 0x6753,
+            Self::MT6755 => 0x6755,
+            Self::MT6757 => 0x6757,
+            Self::MT6761 => 0x6761,
+            Self::MT6763 => 0x6763,
+            Self::MT6765 => 0x6765,
             Self::MT6768 => 0x6768,
+            Self::MT6771 => 0x6771,
+            Self::MT6779 => 0x6779,
+            Self::MT6785 => 0x6785,
+            Self::MT6797 => 0x6797,
+            Self::MT6799 => 0x6799,
+            Self::MT6833 => 0x6833,
+            Self::MT6853 => 0x6853,
+            Self::MT6873 => 0x6873,
+            Self::MT6877 => 0x6877,
+            Self::MT6885 => 0x6885,
+            Self::MT6893 => 0x6893,
+            Self::MT8696 => 0x8696,
         }
-    }
-
-    unsafe fn try_from_mmio() -> Option<Self> {
-        let hwcode = unsafe { ptr::read_volatile(Self::devinfo() as _) };
-        Self::try_from_hwcode(hwcode)
     }
 }
 
@@ -289,14 +715,44 @@ impl Memory for SoC {
 
     fn dram_start(self) -> u32 {
         match self {
-            Self::MT6572 | Self::MT6582 => 0x80000000,
+            Self::MT6570 | Self::MT6572 | Self::MT6580 | Self::MT6582 => 0x80000000,
             Self::MT6575 | Self::MT6577 => 0x00000000,
-            Self::MT6595 => 0x40000000,
-            Self::MT6739 => 0x40000000,
-            Self::MT6768 => 0x40000000,
-            Self::MT6855 => 0x40000000,
-            Self::MT6886 => 0x40000000,
-            Self::MT6878 => 0x40000000,
+            Self::MT6595
+            | Self::MT6735
+            | Self::MT6739
+            | Self::MT6753
+            | Self::MT6755
+            | Self::MT6757
+            | Self::MT6761
+            | Self::MT6763
+            | Self::MT6765
+            | Self::MT6768
+            | Self::MT6771
+            | Self::MT6779
+            | Self::MT6785
+            | Self::MT6789
+            | Self::MT6797
+            | Self::MT6799
+            | Self::MT6833
+            | Self::MT6835
+            | Self::MT6853
+            | Self::MT6855
+            | Self::MT6858
+            | Self::MT6873
+            | Self::MT6877
+            | Self::MT6878
+            | Self::MT6879
+            | Self::MT6885
+            | Self::MT6886
+            | Self::MT6893
+            | Self::MT6895
+            | Self::MT6897
+            | Self::MT6899
+            | Self::MT6983
+            | Self::MT6985
+            | Self::MT6989
+            | Self::MT8696 => 0x40000000,
+            Self::MT6991 | Self::MT6993 | Self::MT6995 => 0x80000000,
         }
     }
 }
